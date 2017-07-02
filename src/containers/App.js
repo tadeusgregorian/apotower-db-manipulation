@@ -1,20 +1,18 @@
 import React, { Component } from 'react';
 import { firebaseAuth } from '../firebaseInstance'
-import { getAllAccountIDs, getUsersOfAccount } from '../actions'
+import { getAllAccountIDs } from '../actions'
 import { cleanUpAssignedGroupsOfUsers } from '../actions/cleanUpAssignedGroups'
-import _ from 'lodash'
+import { getAssignedGroupsOfUsers } from '../actions/getAssignedGroups'
 import './App.css';
 
-class App extends Component {
+export default class App extends Component {
   constructor(p){
     super(p)
 
     firebaseAuth().signInWithEmailAndPassword('admin@apotower.de', 'allgood2')
-      .then(() => this.startPulling())
-      .catch(e => console.log(e))
   }
 
-  startPulling = () => {
+  cleanUpGroups = () => {
     getAllAccountIDs()
       .then(accountIDs => {
         const accountPromises = []
@@ -23,15 +21,24 @@ class App extends Component {
       })
   }
 
+  logAssignedGroups = () => {
+    getAllAccountIDs()
+      .then(accountIDs => {
+        const accountPromises = []
+        accountIDs.forEach(id => accountPromises.push(getAssignedGroupsOfUsers(id)))
+        Promise.all(accountPromises).then(resArray => {
+          resArray.forEach(groups => groups.forEach(group => console.log(group)))
+        })
+      })
+  }
 
 
   render() {
     return (
       <div className="App">
-        Doing some DB inspection.
+        <btn onClick={this.cleanUpGroups}> Delete Excess Groups </btn>
+        <btn onClick={this.logAssignedGroups}> Log assignedGroups </btn>
       </div>
     )
   }
 }
-
-export default App;

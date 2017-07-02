@@ -1,4 +1,3 @@
-import { firebaseAuth } from '../firebaseInstance'
 import FBInstance from '../firebaseInstance'
 import _ from 'lodash'
 
